@@ -118,7 +118,7 @@ window.addEventListener("DOMContentLoaded", () => {
       globRe = new RegExp("^" + reBody + "$", "i");
     }
     for (const entry of jvs) {
-      const [lemma, type, definition] = entry;
+      const [lemma, type, definition, notes] = entry;
       let score = 0;
       let i = -1;
       let j = -1;
@@ -133,7 +133,8 @@ window.addEventListener("DOMContentLoaded", () => {
         : (i = words.indexOf(lemma)) > -1 ||
           (j = lujvoParts.indexOf(lemma)) > -1 ||
           inLemma ||
-          full.test(definition);
+          full.test(definition) ||
+          full.test(notes);
       if (matches) {
         if (isSelmahoQuery) {
           score = /\*/.test(type) ? 70000 : 71000;
@@ -149,6 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
           if (lemma === natural || lemma === apostrophized) score += 100;
           if (full.test(lemma)) score += 8;
           if (full.test(definition)) score += 8;
+          if (full.test(notes)) score += 4;
           if (gismuRegex.test(lemma)) score += type === 5 ? 1 : 5;
         }
         results.push([score, entry]);
@@ -161,7 +163,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("results").replaceChildren(
       ...results.flatMap((e) => {
         const dt = document.createElement("dt");
-        const [lemma, type, definition] = e[1];
+        const [lemma, type, definition, notes] = e[1];
         const rafsi =
           gismu_rafsi_list$(lemma) ?? cmavo_rafsi_list$(lemma) ?? [];
         const obsolete = type >= 10 && type <= 13;
@@ -195,6 +197,20 @@ window.addEventListener("DOMContentLoaded", () => {
         dt.appendChild(jvs);
         const dd = document.createElement("dd");
         dd.appendChild(document.createTextNode(definition));
+        if (notes) {
+          const brSpan = document.createElement("span");
+          brSpan.innerHTML = "<br />"
+          brSpan.hidden = true;
+          dd.appendChild(brSpan);
+          const noteButton = document.createElement("button");
+          noteButton.appendChild(document.createTextNode("📝"));
+          noteButton.className = "noteswitch";
+          dd.appendChild(noteButton);
+          const noteSpan = document.createElement("span");
+          noteSpan.appendChild(document.createTextNode(notes));
+          noteSpan.hidden = true;
+          dd.appendChild(noteSpan);
+        }
         if (!isGlob && !isSelmahoQuery)
           dd.innerHTML = dd.innerHTML.replace(full, "<mark>$&</mark>");
         dd.innerHTML = dd.innerHTML.replace(
@@ -204,6 +220,14 @@ window.addEventListener("DOMContentLoaded", () => {
         return [dt, dd];
       })
     );
+    for (const e of document.getElementsByClassName("noteswitch")) {
+      e.addEventListener("click", () => {
+        const isHidden = !e.parentElement.lastChild.hidden
+        for (const sp of e.parentElement.getElementsByTagName("span")) {
+          sp.hidden = isHidden;
+        };
+      });
+    }
   }
   function setSearchFromHistory() {
     return (search.value = decodeURIComponent(

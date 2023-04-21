@@ -26,7 +26,8 @@ for lang in ["en", "ja", "jbo", "eo"]:
         word = valsi.get("word")
         selmaho = valsi.findtext("selmaho") or types.index(valsi.get("type"))
         definition = valsi.findtext("definition") or ""
-        data.append([word, selmaho, definition])
+        notes = valsi.findtext("notes") or ""
+        data.append([word, selmaho, definition, notes])
     js = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
     with open(f"jvs-{lang}.json", "w") as f:
         f.write(js)

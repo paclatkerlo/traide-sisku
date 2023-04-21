@@ -1,2 +1,3 @@
 *.xml
 *.json.gz
+.DS_Store

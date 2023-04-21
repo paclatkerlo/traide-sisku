@@ -105,6 +105,7 @@
       }
       button {
         font-family: var(--sanserife);
+        padding: 3px;
       }
       button.lang {
         flex: 1;
@@ -124,15 +125,20 @@
         background-color: var(--dukti);
         border-color: var(--dukti);
       }
-      button#lightswitch {
+      button#lightswitch, button.noteswitch {
         font-size: 18px;
-        color: var(--pelji);
         background: none;
         border: none;
-        position: absolute;
         cursor: pointer;
+      }
+      button#lightswitch {
+        color: var(--pelji);
+        position: absolute;
         right: 4px;
         top: 4px;
+      }
+      button.noteswitch {
+        color: var(--dukti); 
       }
       button#clear {
         border: none;
