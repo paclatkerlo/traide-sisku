@@ -11,6 +11,7 @@ types = [
     "fu'ivla",
     "gismu",
     "lujvo",
+    "nalvla",
     "obsolete cmavo",
     "obsolete cmevla",
     "obsolete fu'ivla",
@@ -18,8 +19,8 @@ types = [
     "zei-lujvo",
 ]
 
-for lang in ["en", "ja", "jbo"]:
-    root = ET.parse(f"jvs-{lang}.xml").getroot()
+for lang in ["en", "ja", "jbo", "eo"]:
+    root = ET.parse(f"jbovlaste-{lang}.xml").getroot()
     data = []
     for valsi in root.iter("valsi"):
         word = valsi.get("word")

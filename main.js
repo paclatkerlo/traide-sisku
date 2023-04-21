@@ -1,4 +1,4 @@
-const langs = ["en", "ja", "jbo"];
+const langs = ["en", "ja", "jbo", "eo"];
 
 const gismuRegex =
   /^([bcdfghjklmnprstvxz][aeiou][bcdfghjklmnprstvxz][bcdfghjklmnprstvxz][aeiou]|[bcdfghjklmnprstvxz][bcdfghjklmnprstvxz][aeiou][bcdfghjklmnprstvxz][aeiou])$/;
@@ -143,7 +143,7 @@ window.addEventListener("DOMContentLoaded", () => {
           score = 80000 - j;
         } else {
           if (definition.length > 400) score -= 100;
-          if (type >= 9 && type <= 12) score -= 100; // obsolete
+          if (type >= 9 && type <= 13) score -= 100; // obsolete
           if (inLemma) score += 5;
           if (x1isMatch.test(definition)) score += 7;
           if (lemma === natural || lemma === apostrophized) score += 100;
@@ -164,7 +164,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const [lemma, type, definition] = e[1];
         const rafsi =
           gismu_rafsi_list$(lemma) ?? cmavo_rafsi_list$(lemma) ?? [];
-        const obsolete = type >= 9 && type <= 12;
+        const obsolete = type >= 10 && type <= 13;
         let extra =
           (type === 4 || type === 5 ? "*" : "") +
           (rafsi.length ? " → " + rafsi.join(" ") : "");
