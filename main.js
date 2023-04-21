@@ -223,6 +223,7 @@ window.addEventListener("DOMContentLoaded", () => {
     for (const e of document.getElementsByClassName("noteswitch")) {
       e.addEventListener("click", () => {
         const isHidden = !e.parentElement.lastChild.hidden
+        e.style.marginTop = isHidden ? "" : "5px";
         for (const sp of e.parentElement.getElementsByTagName("span")) {
           sp.hidden = isHidden;
         };
