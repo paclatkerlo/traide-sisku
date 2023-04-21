@@ -21,7 +21,7 @@ const wordTypes = [
 ];
 
 function setDark(dark) {
-  document.getElementById("lightswitch").innerText = dark ? "🌙" : "🌞";
+  document.getElementById("lightswitch").innerText = dark ? "🌜\ufe0e" : "☀\ufe0e";
   document.body.className = dark ? "dark" : "";
   localStorage.setItem("theme", dark ? "dark" : "light");
 }
@@ -55,6 +55,11 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   const search = document.getElementById("search");
   const lujvoResult = document.getElementById("lujvo_result");
+  document.getElementById("clear").addEventListener("click", () => {
+    search.value = "";
+    go();
+    search.focus();
+  });
 
   function go() {
     const trimmed = search.value.trim();
@@ -117,6 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let score = 0;
       let i = -1;
       let j = -1;
+      if (lemma.length > 70) continue; // joke words
       const inLemma =
         !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
       const matches = isSelmahoQuery
@@ -185,7 +191,7 @@ window.addEventListener("DOMContentLoaded", () => {
         jvs.href = "https://jbovlaste.lojban.org/dict/" + lemma;
         jvs.target = "_blank";
         jvs.rel = "noopener noreferrer";
-        jvs.appendChild(document.createTextNode("↗️"));
+        jvs.appendChild(document.createTextNode("🡕"));
         dt.appendChild(jvs);
         const dd = document.createElement("dd");
         dd.appendChild(document.createTextNode(definition));

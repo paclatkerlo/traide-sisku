@@ -120,7 +120,7 @@
         border-color: var(--dukti);
       }
       button#lightswitch {
-        font-size: 16px;
+        font-size: 18px;
         color: var(--pelji);
         background: none;
         border: none;
@@ -128,6 +128,17 @@
         cursor: pointer;
         right: 4px;
         top: 4px;
+      }
+      button#clear {
+        border: none;
+        background: none;
+        margin-left: -2em;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      input:placeholder-shown + button#clear {
+        opacity: 0.2;
+        cursor: inherit;
       }
     </style>
     <script src="sozysozbot_jvozba/docs/rafsi_list.js"></script>
@@ -159,6 +170,7 @@
         placeholder="loading..."
         disabled
       />
+      <button id="clear">✖&#xFE0E;</button>
       <span id="lujvo_result"></span>
       <dl id="results"></dl>
     </div>
