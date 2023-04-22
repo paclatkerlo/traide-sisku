@@ -214,7 +214,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!isGlob && !isSelmahoQuery)
           dd.innerHTML = dd.innerHTML.replace(full, "<mark>$&</mark>");
         dd.innerHTML = dd.innerHTML.replace(
-          /([\$=])(\w+)_\{?(\d+)\}?\$?/g,
+          /([\$=])([A-Za-z]+)_?\{?([n\d+])\}?\$?/g,
           (_, v, w, d) => `${v === "=" ? "=" : ""}<i>${w}</i><sub>${d}</sub>`
         );
         return [dt, dd];
