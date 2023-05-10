@@ -21,7 +21,9 @@ const wordTypes = [
 ];
 
 function setDark(dark) {
-  document.getElementById("lightswitch").innerText = dark ? "🌜" : "🌞";
+  const sunOrMoon = dark ? "moon" : "sun";
+  const colorSchemeIcon = `<i class="fa-solid fa-fw fa-${sunOrMoon}"></i>`;
+  document.getElementById("lightswitch").innerHTML = colorSchemeIcon;
   document.body.className = dark ? "dark" : "";
   localStorage.setItem("theme", dark ? "dark" : "light");
 }
@@ -62,6 +64,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   function go() {
+    window.scrollTo(0, 0);
     const trimmed = search.value.trim();
     lujvoResult.innerHTML = "";
     if (!trimmed) {
@@ -74,8 +77,16 @@ window.addEventListener("DOMContentLoaded", () => {
     const natural = noU2019.replace(/[^\s\p{L}\d']/gu, "").toLowerCase();
     const apostrophized = natural.replaceAll("h", "'");
     const words = natural.split(/\s+/);
-    const specialPatterns = { ja: natural, en: `\\b${natural}e?s?\\b` };
-    const full = new RegExp(specialPatterns[lang] ?? `\\b${natural}\\b`, "ui");
+    const specialPatterns = { 
+      ja: "abcdefgijklmnoprstuvxyz'".includes(natural.charAt(0)) 
+        ? undefined 
+        : natural,
+      en: `(^|[^a-z'#])(${natural}(es|s)?)(?=$|[^a-z'])`, 
+      eo: `(^|[^a-zĉĝĥĵŝŭ'#])(${natural})(?=$|[^a-zĉĝĥĵŝŭ'])` 
+    };
+    const full = new RegExp(
+      specialPatterns[lang] ?? `(^|[^a-z'#])(${natural})(?=$|[^a-z'])`, "ui"
+    );
     const x1isMatch = new RegExp(
       "1\\}?\\$ (is (a |[$x2_{} ]+|[a-z/ ]+)?)?" + natural
     );
@@ -193,7 +204,7 @@ window.addEventListener("DOMContentLoaded", () => {
         jvs.href = "https://jbovlaste.lojban.org/dict/" + lemma;
         jvs.target = "_blank";
         jvs.rel = "noopener noreferrer";
-        jvs.appendChild(document.createTextNode("↗️"));
+        jvs.innerHTML = '<i class="fa-solid fa-square-arrow-up-right"></i>';
         dt.appendChild(jvs);
         const dd = document.createElement("dd");
         dd.appendChild(document.createTextNode(definition));
@@ -203,16 +214,20 @@ window.addEventListener("DOMContentLoaded", () => {
           brSpan.hidden = true;
           dd.appendChild(brSpan);
           const noteButton = document.createElement("button");
-          noteButton.appendChild(document.createTextNode("📝"));
+          noteButton.innerHTML = '<i class="fa-solid fa-note-sticky"></i>';
           noteButton.className = "noteswitch";
           dd.appendChild(noteButton);
           const noteSpan = document.createElement("span");
           noteSpan.appendChild(document.createTextNode(notes));
+          noteSpan.innerHTML = noteSpan.innerHTML.replace(
+            /\{([a-z']+)\}/g, 
+            (_, w) => `{<a href="#${w}">${w}</a>}`
+          );
           noteSpan.hidden = true;
           dd.appendChild(noteSpan);
         }
         if (!isGlob && !isSelmahoQuery)
-          dd.innerHTML = dd.innerHTML.replace(full, "<mark>$&</mark>");
+          dd.innerHTML = dd.innerHTML.replace(full, "$1<mark>$2</mark>");
         dd.innerHTML = dd.innerHTML.replace(
           /([\$=])([A-Za-z]+)_?\{?([n\d+])\}?\$?/g,
           (_, v, w, d) => `${v === "=" ? "=" : ""}<i>${w}</i><sub>${d}</sub>`

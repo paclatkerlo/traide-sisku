@@ -16,8 +16,8 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="shortcut icon" type="image/png" href="favicon-180.png"/>
     <link rel="apple-touch-icon" href="favicon-180.png">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Noto%20Emoji:700">
+    <script src="Font-Awesome/js/fontawesome.js"></script>
+    <script src="Font-Awesome/js/solid.js"></script>
     <style>
       :root {
         font-size: 18px;
@@ -60,6 +60,9 @@
         color: var(--pelji);
         padding: 0rem 0.25rem;
       }
+      label[for=search] {
+        padding-right: 2px;
+      }
       input {
         font-family: var(--sanserife);
         font-size: 16px;
@@ -96,15 +99,20 @@
         font-size: 12px;
         border-radius: 3px;
         padding: 1px 4px;
-        vertical-align: middle;
+        vertical-align: text-bottom;
         color: inherit;
         text-decoration: none;
+        margin-bottom: 1px;
       }
       dt a.selmaho:hover {
         text-decoration: underline;
       }
+      dd a {
+        font-weight: bold;
+        color: inherit;
+        text-decoration: none;
+      }
       button:not(.lang) {
-        font-family: var(--sanserife);
         padding: 3px;
       }
       button.lang {
@@ -140,12 +148,16 @@
       button.noteswitch {
         color: var(--dukti); 
         padding-top: 0px;
+        padding-bottom: 0px;
         margin-top: -1px;
+        margin-left: 3px;
+        margin-right: 3px;
       }
       button#clear {
         border: none;
         background: none;
-        margin-left: -2em;
+        margin-left: -28px;
+        margin-right: 6px;
         font-size: 16px;
         cursor: pointer;
         color: var(--xinmo);
@@ -174,7 +186,7 @@
         <button class="lang" data-lang="jbo">lojban</button>
         <button class="lang" data-lang="eo">esperanto</button>
       </div>
-      <label for="search">🔪 </label>
+      <label for="search"><i class="fa-solid fa-magnifying-knife"></i></label>
       <input id="exp_rafsi" type="checkbox" checked style="display: none" />
       <input
         autocomplete="off"
@@ -185,7 +197,7 @@
         placeholder="loading..."
         disabled
       />
-      <button id="clear">✖</button>
+      <button id="clear"><i class="fa-solid fa-square-xmark"></i></button>
       <span id="lujvo_result"></span>
       <dl id="results"></dl>
     </div>
