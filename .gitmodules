@@ -1,6 +1,6 @@
-[submodule "sozysozbot_jvozba"]
-	path = sozysozbot_jvozba
-	url = https://github.com/sozysozbot/sozysozbot_jvozba
 [submodule "Font-Awesome"]
 	path = Font-Awesome
 	url = https://github.com/paclatkerlo/Font-Awesome.git
+[submodule "latkerlo-jvotci"]
+	path = latkerlo-jvotci
+	url = https://github.com/latkerlo/latkerlo-jvotci.git
