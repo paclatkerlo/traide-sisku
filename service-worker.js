@@ -14,10 +14,6 @@ const filesToCache = [
   '/latkerlo-jvotci/js/docs/katna.js',
   '/Font-Awesome/js/fontawesome.js',
   '/Font-Awesome/js/solid.js',
-  '/jvs-en.json',
-  '/jvs-eo.json',
-  '/jvs-ja.json',
-  '/jvs-jbo.json',
   '/?en',
   '/?eo',
   '/?ja',
@@ -36,13 +32,14 @@ self.addEventListener('install', e => {
 self.addEventListener('fetch', e => {
   e.respondWith((async () => {
     const fetchedResponsePromise = (async () => {
-      fetch(e.request)
+      return fetch(e.request)
       .then(response => {
+        const clonedResponse = response.clone();
         if (response.ok) {
           caches
           .open(cacheName)
           .then((someCache) => someCache.put(e.request, response));
-          return response;
+          return clonedResponse;
         }
       })
     })();

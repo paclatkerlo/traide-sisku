@@ -31,6 +31,7 @@ function setDark(dark) {
 window.addEventListener("DOMContentLoaded", () => {
   let lang = "en";
   let interval = undefined;
+  let jvs = [];
 
   const theme =
     localStorage.getItem("theme") ??
@@ -46,8 +47,9 @@ window.addEventListener("DOMContentLoaded", () => {
     setDark(document.body.className !== "dark");
   });
   const search = document.getElementById("search");
+  const clear = document.getElementById("clear");
   const lujvoResult = document.getElementById("lujvo_result");
-  document.getElementById("clear").addEventListener("click", () => {
+  clear.addEventListener("click", () => {
     search.value = "";
     go();
     search.focus();
@@ -89,7 +91,8 @@ window.addEventListener("DOMContentLoaded", () => {
       if (words.length === 1) {
         const selrafsi = searchSelrafsiFromRafsi(apostrophized);
         if (selrafsi) {
-          lujvoResult.innerHTML = "← " + selrafsi;
+          if (selrafsi !== apostrophized)
+            lujvoResult.innerHTML = "← " + selrafsi;
         } else {
           try {
             lujvoParts = getVeljvo(apostrophized);
@@ -189,12 +192,12 @@ window.addEventListener("DOMContentLoaded", () => {
           a.appendChild(document.createTextNode(type));
           dt.appendChild(a);
         }
-        const jvs = document.createElement("a");
-        jvs.href = "https://jbovlaste.lojban.org/dict/" + lemma;
-        jvs.target = "_blank";
-        jvs.rel = "noopener noreferrer";
-        jvs.innerHTML = '<i class="fa-solid fa-square-arrow-up-right"></i>';
-        dt.appendChild(jvs);
+        const jvsLink = document.createElement("a");
+        jvsLink.href = "https://jbovlaste.lojban.org/dict/" + lemma;
+        jvsLink.target = "_blank";
+        jvsLink.rel = "noopener noreferrer";
+        jvsLink.innerHTML = '<i class="fa-solid fa-square-arrow-up-right"></i>';
+        dt.appendChild(jvsLink);
         const dd = document.createElement("dd");
         dd.appendChild(document.createTextNode(definition));
         if (notes) {
@@ -247,6 +250,7 @@ window.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("lang", lang);
     search.placeholder = "loading...";
     search.disabled = true;
+    clear.disabled = true;
     fetch(`./jvs-${lang}.json`, {
       headers: { accept: "application/json; charset=utf8;" },
     })
@@ -256,8 +260,23 @@ window.addEventListener("DOMContentLoaded", () => {
         search.value = query;
         search.placeholder = "sisyvla";
         search.disabled = false;
+        clear.disabled = false;
         go();
         search.focus();
+      })
+      .catch(() => {
+        window.history.replaceState(null, null, "?" + lang + "#" + query);
+        const errorMessage = document.createElement("p");
+        errorMessage.appendChild(document.createTextNode(
+          "Database missing or out of date. " +
+          "Refresh while online to update."));
+        const refreshButton = document.createElement("button");
+        refreshButton.id = "refresh";
+        refreshButton.innerHTML = "Refresh Now";
+        refreshButton.addEventListener("click", () => {
+          location.reload();
+        });
+        document.getElementById("results").replaceChildren(...[errorMessage, refreshButton]);
       });
     for (const e of document.getElementsByClassName("lang")) {
       e.className =
