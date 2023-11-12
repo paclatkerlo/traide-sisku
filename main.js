@@ -130,7 +130,7 @@ window.addEventListener("DOMContentLoaded", () => {
       let score = 0;
       let i = -1;
       let j = -1;
-      if (votes < -1) continue; // really bad words
+      if (votes < -1 && !(lemma === apostrophized)) continue; // really bad words
       if (lemma.length > 70) continue; // joke words
       const inLemma =
         !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
