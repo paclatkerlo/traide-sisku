@@ -11,7 +11,6 @@ types = [
     "fu'ivla",
     "gismu",
     "lujvo",
-    "nalvla",
     "obsolete cmavo",
     "obsolete cmevla",
     "obsolete fu'ivla",
