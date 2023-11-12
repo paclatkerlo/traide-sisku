@@ -24,10 +24,13 @@ for lang in ["en", "ja", "jbo", "eo"]:
     data = []
     for valsi in root.iter("valsi"):
         word = valsi.get("word")
-        selmaho = valsi.findtext("selmaho") or types.index(valsi.get("type"))
-        definition = (valsi.findtext("definition") or "").strip()
+        if valsi.get("type") == "nalvla": continue
+        type_index = types.index(valsi.get("type"))
+        selmaho = valsi.findtext("selmaho") or ""
+        score = int(valsi.findtext("score") or "0")
+        definition = valsi.findtext("definition") or ""
         notes = (valsi.findtext("notes") or "").strip()
-        data.append([word, selmaho, definition, notes])
+        data.append([word, type_index, selmaho, score, definition, notes])
     js = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
     with open(f"jvs-{lang}.json", "w") as f:
         f.write(js)

@@ -22,10 +22,13 @@ const wordTypes = [
 
 function setDark(dark) {
   const sunOrMoon = dark ? "moon" : "sun";
-  const colorSchemeIcon = `<i class="fa-solid fa-fw fa-${sunOrMoon}"></i>`;
-  document.getElementById("lightswitch").innerHTML = colorSchemeIcon;
+  document.getElementById(
+    "lightswitch"
+  ).innerHTML = `<i class="fa-solid fa-fw fa-${sunOrMoon}"></i>`;
   document.body.className = dark ? "dark" : "";
-  localStorage.setItem("theme", dark ? "dark" : "light");
+  try {
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  } catch (e) {}
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -33,12 +36,13 @@ window.addEventListener("DOMContentLoaded", () => {
   let interval = undefined;
   let jvs = [];
 
-  const theme =
-    localStorage.getItem("theme") ??
-    (window.matchMedia &&
+  let theme = (window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light");
+  try {
+    theme = localStorage.getItem("theme") ?? theme;
+  } catch (e) {}
   setDark(theme === "dark");
   setTimeout(() => {
     document.body.style.transition = "color 0.2s,background-color 0.2s";
@@ -85,7 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
     let lujvoParts = [];
     let results = [];
     const isSelmahoQuery =
-      /^[A-Zh0-9*]+$/.test(trimmed) && !/^[?*VC]+$/.test(trimmed);
+      /^[A-Zabch0-9*]+$/.test(trimmed) && !/^[?*VC]+$/.test(trimmed);
     const isGlob = /[?*VC]/.test(trimmed);
     if (!isSelmahoQuery && !isGlob) {
       if (words.length === 1) {
@@ -122,16 +126,17 @@ window.addEventListener("DOMContentLoaded", () => {
       globRe = new RegExp("^" + reBody + "$", "i");
     }
     for (const entry of jvs) {
-      const [lemma, type, definition, notes] = entry;
+      const [lemma, type, selmaho, votes, definition, notes] = entry;
       let score = 0;
       let i = -1;
       let j = -1;
+      if (votes < -1) continue; // really bad words
       if (lemma.length > 70) continue; // joke words
       const inLemma =
         !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
       const matches = isSelmahoQuery
-        ? typeof type === "string" &&
-          (trimmed === type || trimmed === type.replaceAll(/[\d*]/g, ""))
+        ? selmaho &&
+          (trimmed === selmaho || trimmed === selmaho.replaceAll(/[\d*]/g, ""))
         : isGlob
         ? globRe.test(lemma)
         : (i = words.indexOf(lemma)) > -1 ||
@@ -141,7 +146,7 @@ window.addEventListener("DOMContentLoaded", () => {
           full.test(notes);
       if (matches) {
         if (isSelmahoQuery) {
-          score = /\*/.test(type) ? 70000 : 71000;
+          score = /\*/.test(selmaho) ? 70000 : 71000;
         } else if (i > -1) {
           score = 90000 - i;
         } else if (j > -1) {
@@ -156,6 +161,7 @@ window.addEventListener("DOMContentLoaded", () => {
           if (full.test(definition)) score += 8;
           if (full.test(notes)) score += 4;
           if (gismuRegex.test(lemma)) score += type === 5 ? 1 : 5;
+          score += Math.min(votes, 5);
         }
         results.push([score, entry]);
       }
@@ -167,7 +173,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("results").replaceChildren(
       ...results.flatMap((e) => {
         const dt = document.createElement("dt");
-        const [lemma, type, definition, notes] = e[1];
+        const [lemma, type, selmaho, votes, definition, notes] = e[1];
         const rafsi = RAFSI.get(lemma) ?? [];
         const obsolete = type >= 10 && type <= 13;
         let extra =
@@ -185,19 +191,21 @@ window.addEventListener("DOMContentLoaded", () => {
           i.appendChild(document.createTextNode(extra));
           dt.appendChild(i);
         }
-        if (typeof type === "string") {
+        if (selmaho) {
           const a = document.createElement("a");
           a.className = "selmaho";
-          a.href = "#" + type;
-          a.appendChild(document.createTextNode(type));
+          a.href = "#" + selmaho;
+          a.appendChild(document.createTextNode(selmaho));
           dt.appendChild(a);
         }
-        const jvsLink = document.createElement("a");
-        jvsLink.href = "https://jbovlaste.lojban.org/dict/" + lemma;
-        jvsLink.target = "_blank";
-        jvsLink.rel = "noopener noreferrer";
-        jvsLink.innerHTML = '<i class="fa-solid fa-square-arrow-up-right"></i>';
-        dt.appendChild(jvsLink);
+        const jvs = document.createElement("a");
+        jvs.href = "https://jbovlaste.lojban.org/dict/" + lemma;
+        jvs.className = "jvs";
+        jvs.target = "_blank";
+        jvs.rel = "noopener noreferrer";
+        jvs.innerText =
+          votes > 999 ? "official" : votes >= 0 ? "+" + votes : "−" + -votes;
+        dt.appendChild(jvs);
         const dd = document.createElement("dd");
         dd.appendChild(document.createTextNode(definition));
         if (notes) {
@@ -247,7 +255,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
     lang = langs.includes(newLang) ? newLang : "en";
     window.history.replaceState(null, null, "?" + lang);
-    localStorage.setItem("lang", lang);
+    try {
+      localStorage.setItem("lang", lang);
+    } catch (e) {}
     search.placeholder = "loading...";
     search.disabled = true;
     clear.disabled = true;
@@ -285,14 +295,17 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   const fromParam = window.location.search.replace("?", "");
-  setLang(fromParam ? fromParam : localStorage.getItem("lang") ?? "en");
+  let userLang = "en";
+  try {
+    userLang = localStorage.getItem("lang") ?? userLang;
+  } catch (e) {}
+  setLang(fromParam ? fromParam : userLang);
 
   function goDebounced() {
     window.clearTimeout(interval);
     interval = window.setTimeout(go, 15);
   }
-  search.addEventListener("keyup", goDebounced);
-  search.addEventListener("paste", goDebounced);
+  search.addEventListener("input", goDebounced);
   window.addEventListener("popstate", () => {
     setSearchFromHistory();
     go();

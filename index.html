@@ -33,7 +33,7 @@
         background-color: var(--pelji);
         font-family: var(--enserife);
         overflow-y: scroll;
-        overflow-wrap: break-word;
+        word-break: break-word;
       }
       body.dark {
         --xinmo: #bb9999;
@@ -46,7 +46,6 @@
       dt,
       h1 {
         font-family: var(--sanserife);
-        font-weight: bold;
       }
       h1 {
         text-align: center;
@@ -59,6 +58,9 @@
         background-color: var(--dukti);
         color: var(--pelji);
         padding: 0rem 0.25rem;
+      }
+      label[for=search] {
+        padding-right: 2px;
       }
       label[for=search] {
         padding-right: 2px;
@@ -89,11 +91,12 @@
       dt a {
         display: inline-block;
         margin-left: 0.5rem;
+        font-weight: bold;
         font-style: normal;
         color: inherit;
         text-decoration: none;
       }
-      dt a.selmaho {
+      dt a.selmaho, dt a.jvs {
         border: 1px solid var(--xinmo);
         font-weight: normal;
         font-size: 12px;
@@ -102,6 +105,7 @@
         vertical-align: text-bottom;
         color: inherit;
         text-decoration: none;
+        margin-bottom: 1px;
         margin-bottom: 1px;
       }
       dt a.selmaho:hover {
@@ -158,6 +162,8 @@
         background: none;
         margin-left: -28px;
         margin-right: 6px;
+        margin-left: -28px;
+        margin-right: 6px;
         font-size: 16px;
         cursor: pointer;
         color: var(--xinmo);
@@ -202,6 +208,7 @@
         placeholder="loading..."
         disabled
       />
+      <button id="clear"><i class="fa-solid fa-square-xmark"></i></button>
       <button id="clear"><i class="fa-solid fa-square-xmark"></i></button>
       <span id="lujvo_result"></span>
       <dl id="results"></dl>
