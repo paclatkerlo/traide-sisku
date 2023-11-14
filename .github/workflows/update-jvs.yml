@@ -28,5 +28,5 @@ jobs:
           branch: update-dictionary
           delete-branch: true
           title: 'Update dictionary'
-          assignees: lynn
-          reviewers: lynn
+          assignees: paclatkerlo
+          reviewers: paclatkerlo
