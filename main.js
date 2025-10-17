@@ -24,6 +24,16 @@ const prefersDark = () =>
 
 const getTheme = () => lget("theme") ?? (prefersDark ? "dark" : "light");
 
+function arrayEquals(a, b) {
+  if (a.length !== b.length)
+    return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i])
+      return false;
+  }
+  return true;
+}
+
 function queryLink(query, className) {
   const a = document.createElement("a");
   a.appendChild(document.createTextNode(query));
@@ -46,7 +56,7 @@ function jvsLink(lemma, votes) {
 function renderResults(results, mark) {
   return results.flatMap((e) => {
     const dt = document.createElement("dt");
-    const [lemma, type, selmaho, votes, definition, notes] = e[1];
+    const [lemma, type, selmaho, votes, definition, notes, decomp] = e[1];
     const rafsi = RAFSI_LIST.get(lemma) ?? [];
     const obsolete = type >= 9 && type <= 12;
     const experimental = type === 4 || type === 5;
@@ -150,10 +160,10 @@ function go() {
   const isSelmahoQuery = /^[A-Z][A-Zabch0-9*]*$/.test(trimmed) && !isGlob;
   const [lujvoParts, lujvoInfo, lujvoWord] = analyzeLujvo(words);
   lujvoResult.innerHTML = lujvoInfo;
-  if (lujvoWord) words.unshift(lujvoWord);
+  // if (lujvoWord) words.unshift(lujvoWord);
   let results = [];
   for (const entry of jvs) {
-    const [lemma, type, selmaho, votes, definition, notes] = entry;
+    const [lemma, type, selmaho, votes, definition, notes, decomp] = entry;
     let score = 0;
     let i = -1;
     let j = -1;
@@ -161,6 +171,20 @@ function go() {
     if (lemma.length > 70) continue; // joke words
     const inLemma =
       !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
+    let lujvoEqual = false;
+    if (words.length > 1) {
+      try {
+        lujvoEqual = arrayEquals(decomp, words);
+      } catch {
+        lujvoEqual = false;
+      }
+    } else {
+      try {
+        lujvoEqual = arrayEquals(decomp, lujvoParts);
+      } catch {
+        lujvoEqual = false;
+      }
+    }
     const matches = isSelmahoQuery
       ? selmaho &&
         (trimmed === selmaho || trimmed === selmaho.replaceAll(/[\d*]/g, ""))
@@ -169,11 +193,17 @@ function go() {
       : (i = words.indexOf(lemma)) > -1 ||
         (j = lujvoParts.indexOf(lemma)) > -1 ||
         inLemma ||
+        lujvoEqual ||
         full.test(definition) ||
         full.test(notes);
     if (matches) {
       if (isSelmahoQuery) {
         score = /\*/.test(selmaho) ? 70000 : 71000;
+      } else if (lujvoEqual) {
+        score = 95000;
+        if (apostrophized === lemma || lujvoWord === lemma) score += 1000;
+        score += votes * 100;
+        score -= lemma.length;
       } else if (i > -1) {
         score = 90000 - i;
       } else if (j > -1) {

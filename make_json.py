@@ -1,5 +1,6 @@
 import os, json
 import xml.etree.ElementTree as ET
+import latkerlo_jvotci
 
 types = [
     "bu-letteral",
@@ -29,7 +30,11 @@ for lang in ["en", "ja", "jbo", "eo"]:
         score = int(valsi.findtext("score") or "0")
         definition = valsi.findtext("definition") or ""
         notes = (valsi.findtext("notes") or "").strip()
-        word_data = [word, type_index, selmaho, score, definition, notes]
+        try:
+            decomp = latkerlo_jvotci.get_veljvo(word)
+        except:
+            decomp = []
+        word_data = [word, type_index, selmaho, score, definition, notes, decomp]
         data.append(json.dumps(word_data, ensure_ascii=False, separators=(',', ':')))
     js = f'[\n  {",\n  ".join(data)}\n]\n'
     with open(f"jvs-{lang}.json", "w") as f:
