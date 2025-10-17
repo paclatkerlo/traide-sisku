@@ -47,7 +47,7 @@ function renderResults(results, mark) {
   return results.flatMap((e) => {
     const dt = document.createElement("dt");
     const [lemma, type, selmaho, votes, definition, notes] = e[1];
-    const rafsi = RAFSI.get(lemma) ?? [];
+    const rafsi = RAFSI_LIST.get(lemma) ?? [];
     const obsolete = type >= 9 && type <= 12;
     const experimental = type === 4 || type === 5;
     dt.appendChild(queryLink(lemma, obsolete ? "obsolete" : ""));
@@ -98,7 +98,7 @@ function analyzeLujvo(words) {
       try {
         lujvoParts = getVeljvo(valsi);
         let result = "← " + queryLink(lujvoParts.join(" ")).outerHTML;
-        const [optimal, _] = getLujvo(lujvoParts);
+        const optimal = getLujvo(lujvoParts);
         if (optimal !== valsi) {
           result += " → " + queryLink(optimal).outerHTML;
         }
@@ -109,7 +109,7 @@ function analyzeLujvo(words) {
     }
   } else if (words.length > 1) {
     try {
-      const [lujvo, _] = getLujvo(words);
+      const lujvo = getLujvo(words);
       return [[], "→ " + queryLink(lujvo).outerHTML, lujvo];
     } catch (e) {
       return [[], ""];
