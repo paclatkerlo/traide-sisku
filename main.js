@@ -160,7 +160,6 @@ function go() {
   const isSelmahoQuery = /^[A-Z][A-Zabch0-9*]*$/.test(trimmed) && !isGlob;
   const [lujvoParts, lujvoInfo, lujvoWord] = analyzeLujvo(words);
   lujvoResult.innerHTML = lujvoInfo;
-  // if (lujvoWord) words.unshift(lujvoWord);
   let results = [];
   for (const entry of jvs) {
     const [lemma, type, selmaho, votes, definition, notes, decomp] = entry;
@@ -172,17 +171,19 @@ function go() {
     const inLemma =
       !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
     let lujvoEqual = false;
-    if (words.length > 1) {
-      try {
-        lujvoEqual = arrayEquals(decomp, words);
-      } catch {
-        lujvoEqual = false;
-      }
-    } else {
-      try {
-        lujvoEqual = arrayEquals(decomp, lujvoParts);
-      } catch {
-        lujvoEqual = false;
+    if (decomp.length > 0) {
+      if (words.length > 1) {
+        try {
+          lujvoEqual = arrayEquals(decomp, words);
+        } catch {
+          lujvoEqual = false;
+        }
+      } else {
+        try {
+          lujvoEqual = arrayEquals(decomp, lujvoParts);
+        } catch {
+          lujvoEqual = false;
+        }
       }
     }
     const matches = isSelmahoQuery
@@ -195,7 +196,8 @@ function go() {
         inLemma ||
         lujvoEqual ||
         full.test(definition) ||
-        full.test(notes);
+        full.test(notes) ||
+        (k = decomp.indexOf(apostrophized)) > -1;
     if (matches) {
       if (isSelmahoQuery) {
         score = /\*/.test(selmaho) ? 70000 : 71000;
@@ -217,6 +219,7 @@ function go() {
         if (full.test(lemma)) score += 8;
         if (full.test(definition)) score += 8;
         if (full.test(notes)) score += 4;
+        else if (k > -1) score += 3;
         if (gismuRegex.test(lemma)) score += type === 5 ? 1 : 5;
         score += Math.min(votes, 5);
       }
