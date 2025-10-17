@@ -78,13 +78,6 @@ function renderResults(results, mark) {
       );
       noteSpan.hidden = true;
       dd.appendChild(noteSpan);
-
-      noteButton.addEventListener("click", () => {
-        const isHidden = !noteButton.parentElement.lastChild.hidden;
-        noteButton.style.marginTop = isHidden ? "" : "5px";
-        brSpan.hidden = isHidden;
-        noteSpan.hidden = isHidden;
-      })
     }
     if (mark) dd.innerHTML = dd.innerHTML.replace(mark, "<mark>$&</mark>");
     dd.innerHTML = dd.innerHTML.replace(
@@ -209,6 +202,16 @@ function go() {
     .replaceChildren(
       ...renderResults(results, isGlob || isSelmahoQuery ? undefined : full)
     );
+
+  for (const e of document.getElementsByClassName("noteswitch")) {
+    e.addEventListener("click", () => {
+      const isHidden = !e.parentElement.lastChild.hidden
+      e.style.marginTop = isHidden ? "" : "5px";
+      for (const sp of e.parentElement.getElementsByTagName("span")) {
+        sp.hidden = isHidden;
+      };
+    });
+  }
 }
 
 function setDark(dark) {
