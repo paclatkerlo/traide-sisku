@@ -241,14 +241,6 @@ function go() {
   }
 }
 
-function setDark(dark) {
-  lset("theme", dark ? "dark" : "light");
-  const icon = dark ? "moon" : "sun";
-  const html = `<i class="fa-solid fa-fw fa-${icon}"></i>`;
-  document.getElementById("lightswitch").innerHTML = html;
-  document.body.className = dark ? "dark" : "";
-}
-
 function setSearchFromHistory() {
   const query = decodeURIComponent(location.href.split("#")[1] || "");
   return (document.getElementById("search").value = query);
@@ -287,7 +279,7 @@ function setLang(newLang) {
       refreshButton.addEventListener("click", () => {
         location.reload();
       });
-      document.getElementById("results").replaceChild(...[errorMessage, refreshButton]);
+      document.getElementById("results").replaceChildren(...[errorMessage, refreshButton]);
     });
   for (const e of document.getElementsByClassName("lang")) {
     e.className =
