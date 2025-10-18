@@ -18,12 +18,6 @@ function lset(key, value) {
   } catch (e) {}
 }
 
-const prefersDark = () =>
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-const getTheme = () => lget("theme") ?? (prefersDark ? "dark" : "light");
-
 function arrayEquals(a, b) {
   if (a.length !== b.length)
     return false;
@@ -308,13 +302,9 @@ function goDebounced() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  setDark(getTheme() === "dark");
   setTimeout(() => {
     document.body.style.transition = "color 0.2s,background-color 0.2s";
   }, 0);
-  document.getElementById("lightswitch").addEventListener("click", () => {
-    setDark(document.body.className !== "dark");
-  });
 
   setLang(window.location.search.replace("?", "") || lget("lang") || "en");
   document.getElementById("search").addEventListener("input", goDebounced);

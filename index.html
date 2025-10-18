@@ -35,10 +35,16 @@
         overflow-y: scroll;
         word-break: break-word;
       }
-      body.dark {
-        --xinmo: #ffa3a3;
-        --dukti: #ffa3a3;
-        --pelji: #222222;
+      @media (prefers-color-scheme: dark) {
+        body {
+          --xinmo: #ffa3a3;
+          --dukti: #ffa3a3;
+          --pelji: #222222;
+        }
+        input {
+          background-color: #200;
+          color: var(--xinmo);
+        }
       }
       dd {
         margin-bottom: 0.5rem;
@@ -68,10 +74,6 @@
         border: 1px solid var(--dukti);
         border-radius: 2px;
         padding: 4px 6px;
-      }
-      body.dark input {
-        background-color: #200;
-        color: var(--xinmo);
       }
       #lujvo_result {
         height: 1.5em;
@@ -187,7 +189,6 @@
     <div style="max-width: 30em; margin: auto">
       <header style="position: relative">
         <h1><span>la traide sisku</span></h1>
-        <button id="lightswitch">…</button>
       </header>
       <div style="display: flex; justify-content: center; margin: 4px 0 12px">
         <button class="lang" data-lang="en">english</button>
