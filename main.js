@@ -143,6 +143,8 @@ function go() {
   }
   window.history.replaceState(null, null, "?" + lang + "#" + trimmed);
   trimmed = trimmed.replaceAll("’", "'");
+  const isLujvoQuery = trimmed.startsWith("lujvo:") || trimmed.startsWith("l:");
+  if (isLujvoQuery) trimmed = trimmed.slice(trimmed.indexOf(":"));
   const natural = trimmed.replace(/[^\s\p{L}\d'\-]/gu, "").toLowerCase();
   const apostrophized = natural.replaceAll("h", "'");
   const words = natural.split(/\s+/);
@@ -152,72 +154,92 @@ function go() {
   const isGlob = /^[?*VCa-z']+$/.test(trimmed) && /[?*VC]/.test(trimmed);
   const globRe = isGlob ? makeGlobRegex(trimmed) : undefined;
   const isSelmahoQuery = /^[A-Z][A-Zabch0-9*]*$/.test(trimmed) && !isGlob;
-  const [lujvoParts, lujvoInfo, lujvoWord] = analyzeLujvo(words);
-  lujvoResult.innerHTML = lujvoInfo;
   let results = [];
-  for (const entry of jvs) {
-    const [lemma, type, selmaho, votes, definition, notes, decomp] = entry;
-    let score = 0;
-    let i = -1;
-    let j = -1;
-    if (votes < -1 && !(lemma === apostrophized)) continue; // really bad words
-    if (lemma.length > 70) continue; // joke words
-    const inLemma =
-      !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
-    let lujvoEqual = false;
-    if (decomp.length > 0) {
-      if (words.length > 1) {
-        try {
-          lujvoEqual = arrayEquals(decomp, words);
-        } catch {
-          lujvoEqual = false;
+  if (isLujvoQuery) {
+    console.log(apostrophized);
+    const isRafsiQuery = apostrophized.slice(-1) === "-";
+    const rafsi = apostrophized.replace(/^\-+|\-+$/g, '');
+    const ziltau = isRafsiQuery ? searchSelrafsiFromRafsi(rafsi) : apostrophized;
+    for (const entry of jvs) {
+      const [lemma, type, selmaho, votes, definition, notes, decomp] = entry;
+      if (decomp.includes(ziltau)) {
+        if (isRafsiQuery) {
+          if (analyseBrivla(lemma)[1].includes(rafsi))
+            results.push([votes, entry]);
+        } else {
+          results.push([votes, entry]);
         }
-      } else {
-        try {
-          lujvoEqual = arrayEquals(decomp, lujvoParts);
-        } catch {
-          lujvoEqual = false;
-        }
+      } else if (ziltau === lemma) {
+        results.push([10000, entry]);
       }
     }
-    const matches = isSelmahoQuery
-      ? selmaho &&
-        (trimmed === selmaho || trimmed === selmaho.replaceAll(/[\d*]/g, ""))
-      : isGlob
-      ? globRe.test(lemma)
-      : (i = words.indexOf(lemma)) > -1 ||
-        (j = lujvoParts.indexOf(lemma)) > -1 ||
-        inLemma ||
-        lujvoEqual ||
-        full.test(definition) ||
-        full.test(notes) ||
-        (k = decomp.indexOf(apostrophized)) > -1;
-    if (matches) {
-      if (isSelmahoQuery) {
-        score = /\*/.test(selmaho) ? 70000 : 71000;
-      } else if (lujvoEqual) {
-        score = 95000;
-        if (apostrophized === lemma || lujvoWord === lemma) score += 1000;
-        score += votes * 100;
-        score -= lemma.length;
-      } else if (i > -1) {
-        score = 90000 - i;
-      } else if (j > -1) {
-        score = 80000 - j;
-      } else {
-        if (definition.length > 400) score -= 100;
-        if (type >= 9 && type <= 12) score -= 100; // obsolete
-        if (inLemma) score += 5;
-        if (x1is.test(definition)) score += 7;
-        if (lemma === natural || lemma === apostrophized) score += 100;
-        if (full.test(lemma)) score += 8;
-        if (full.test(definition)) score += 8;
-        if (full.test(notes)) score += 4;
-        else if (k > -1) score += 3;
-        if (gismuRegex.test(lemma)) score += type === 5 ? 1 : 5;
-        score += Math.min(votes, 5);
+  } else {
+    const [lujvoParts, lujvoInfo, lujvoWord] = analyzeLujvo(words);
+    lujvoResult.innerHTML = lujvoInfo;
+    for (const entry of jvs) {
+      const [lemma, type, selmaho, votes, definition, notes, decomp] = entry;
+      let score = 0;
+      let i = -1;
+      let j = -1;
+      if (votes < -1 && !(lemma === apostrophized)) continue; // really bad words
+      if (lemma.length > 70) continue; // joke words
+      const inLemma =
+        !isGlob && (lemma.includes(natural) || lemma.includes(apostrophized));
+      let lujvoEqual = false;
+      if (decomp.length > 0) {
+        if (words.length > 1) {
+          try {
+            lujvoEqual = arrayEquals(decomp, words);
+          } catch {
+            lujvoEqual = false;
+          }
+        } else {
+          try {
+            lujvoEqual = arrayEquals(decomp, lujvoParts);
+          } catch {
+            lujvoEqual = false;
+          }
+        }
       }
-      results.push([score, entry]);
+      const matches = isSelmahoQuery
+        ? selmaho &&
+          (trimmed === selmaho || trimmed === selmaho.replaceAll(/[\d*]/g, ""))
+        : isGlob
+        ? globRe.test(lemma)
+        : (i = words.indexOf(lemma)) > -1 ||
+          (j = lujvoParts.indexOf(lemma)) > -1 ||
+          inLemma ||
+          lujvoEqual ||
+          full.test(definition) ||
+          full.test(notes) ||
+          (k = decomp.indexOf(apostrophized)) > -1;
+      if (matches) {
+        if (isSelmahoQuery) {
+          score = /\*/.test(selmaho) ? 70000 : 71000;
+        } else if (lujvoEqual) {
+          score = 95000;
+          if (apostrophized === lemma || lujvoWord === lemma) score += 1000;
+          score += votes * 100;
+          score -= lemma.length;
+        } else if (i > -1) {
+          score = 90000 - i;
+        } else if (j > -1) {
+          score = 80000 - j;
+        } else {
+          if (definition.length > 400) score -= 100;
+          if (type >= 9 && type <= 12) score -= 100; // obsolete
+          if (inLemma) score += 5;
+          if (x1is.test(definition)) score += 7;
+          if (lemma === natural || lemma === apostrophized) score += 100;
+          if (full.test(lemma)) score += 8;
+          if (full.test(definition)) score += 8;
+          if (full.test(notes)) score += 4;
+          else if (k > -1) score += 3;
+          if (gismuRegex.test(lemma)) score += type === 5 ? 1 : 5;
+          score += Math.min(votes, 5);
+        }
+        results.push([score, entry]);
+      }
     }
   }
   results.sort((a, b) => b[0] - a[0]);
