@@ -157,7 +157,7 @@ function go() {
   let results = [];
   if (isLujvoQuery) {
     console.log(apostrophized);
-    const isRafsiQuery = apostrophized.slice(-1) === "-";
+    const isRafsiQuery = apostrophized[0] === "-" || apostrophized.slice(-1) === "-";
     const rafsi = apostrophized.replace(/^\-+|\-+$/g, '');
     const ziltau = isRafsiQuery ? searchSelrafsiFromRafsi(rafsi) : apostrophized;
     for (const entry of jvs) {
