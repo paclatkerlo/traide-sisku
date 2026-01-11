@@ -374,7 +374,7 @@
   ["catke",7,"",1,"$x_1$ danre $x_2$ lo ka muvdu to'o $x_1$ .i $x_1$ to'e lacpu $x_2$","{danre}; {muvdu}; {to'o}; {lacpu}",[]],
   ["catlu",7,"",1,"$x_1$ selfa'agau lo kanla $x_2$ te zu'e lo ka viska je zgana $x_2$","{kanla} .i {selfa'agau} ,i {viska} .i {zgana}",[]],
   ["catni",7,"",1,"$x_1$ vlipa lo ka zukte ja ckaji $x_2$ kei ji'u $x_3$","{vlipa}; {jicmu}; {pajni}; {jdice}; {minde}; {jitro}; {pulji}; {turni}",[]],
-  ["catra",7,"",1,"$x_1$ gasnu lo nu $x_2$ mrobi'o kei ta'i $x_3$","{gasnu}; {mrobi'o}; {tadji}",[]],
+  ["catra",7,"",2,"$x_1$ gasnu lo nu $x_2$ mrobi'o kei ta'i $x_3$","{gasnu}; {mrobi'o}; {tadji}",[]],
   ["catryse'i",8,"",1,"$x_1$ sefsi lo ka ce'u catra ce'u $x_2$","{sefsi} .i {catra}",["catra","sevzi"]],
   ["ca'u",1,"FAhA2",1,"fi'o se crane","{crane}",[]],
   ["cau",1,"BAI",1,"fi'o claxu","",[]],
