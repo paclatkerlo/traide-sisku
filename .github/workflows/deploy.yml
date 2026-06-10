@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Deploy to trade.jbobau.org
+      - name: Deploy to traide.jbobau.org
         uses: cloudflare/wrangler-action@v3
         with:
           # Secrets from cloudflare.
