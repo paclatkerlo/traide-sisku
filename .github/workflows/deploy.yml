@@ -20,6 +20,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           # Secrets from cloudflare.
-          apiToken: ${{ secrets.JBOBAU_API_TOKEN }}
-          accountId: ${{ secrets.JBOBAU_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy . --project-name=traide-jbobau-org --branch=traide-jbobau-org
