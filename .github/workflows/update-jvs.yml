@@ -15,7 +15,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install latkerlo-jvotci
           for lang in en ja jbo eo; do
-            curl "https://jbovlaste.lojban.org/export/xml-export.html?lang=$lang&positive_scores_only=0&bot_key=z2BsnKYJhAB0VNsl" > "jbovlaste-$lang.xml"
+            curl "https://lensisku.lojban.org/api/export/cached/$lang/xml" > "jbovlaste-$lang.xml"
           done
           python3 make_json.py
 
