@@ -17,15 +17,17 @@ types = [
     "obsolete fu'ivla",
     "obsolete zei-lujvo",
     "zei-lujvo",
+    "phrase",
 ]
 
 for lang in ["en", "ja", "jbo", "eo"]:
     root = ET.parse(f"jbovlaste-{lang}.xml").getroot()
     data = []
     for valsi in root.iter("valsi"):
-        word = valsi.get("word")
-        if valsi.get("type") == "nalvla": continue
-        type_index = types.index(valsi.get("type"))
+        word = valsi.findtext("word")
+        ty = valsi.findtext("type")
+        if ty == "nalvla": continue
+        type_index = types.index(ty)
         selmaho = valsi.findtext("selmaho") or ""
         score = int(valsi.findtext("score") or "0")
         definition = valsi.findtext("definition") or ""
@@ -36,6 +38,7 @@ for lang in ["en", "ja", "jbo", "eo"]:
             decomp = []
         word_data = [word, type_index, selmaho, score, definition, notes, decomp]
         data.append(json.dumps(word_data, ensure_ascii=False, separators=(',', ':')))
+    if not data: raise Exception("no data found")
     js = f'[\n  {",\n  ".join(data)}\n]\n'
     with open(f"jvs-{lang}.json", "w") as f:
         f.write(js)
