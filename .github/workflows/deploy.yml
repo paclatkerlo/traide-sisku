@@ -1,0 +1,25 @@
+name: Deploy to traide.jbobau.org via Cloudflare
+
+on:
+  push:
+    branches: [traide-jbobau-org]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Deploy to traide.jbobau.org
+        uses: cloudflare/wrangler-action@v3
+        with:
+          # Secrets from cloudflare.
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=traide-jbobau-org --branch=traide-jbobau-org
