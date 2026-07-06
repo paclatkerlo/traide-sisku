@@ -21,9 +21,9 @@ types = [
 ]
 
 for lang in ["en", "ja", "jbo", "eo"]:
-    root = ET.parse(f"jbovlaste-{lang}.xml").getroot()
+    root = ET.parse(f"dictionary-{lang}.xml").getroot()
     data = []
-    for valsi in root.iter("valsi"):
+    for valsi in root.iter("entry"):
         word = valsi.findtext("word")
         ty = valsi.findtext("type")
         if ty == "nalvla": continue
