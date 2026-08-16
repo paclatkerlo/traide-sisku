@@ -21,7 +21,7 @@ types = [
 ]
 
 for lang in ["en", "ja", "jbo", "eo"]:
-    root = ET.parse(f"dictionary-{lang}.xml").getroot()
+    root = ET.parse(f"dictionary-jbo-{lang}.xml").getroot()
     data = []
     for valsi in root.iter("entry"):
         word = valsi.findtext("word")
